@@ -1,0 +1,26 @@
+[tool.isort]
+profile = "pycharm"
+src_paths = ["src", "tests"]
+skip_gitignore = true
+line_length = 160
+known_first_party = ["tunsberg"]
+multi_line_output = 2
+
+
+[tool.flake8]
+max-line-length = 160
+ignore = ["E121", "E126", "E127", "D104", "D400", "D210", "D101", "D100", "D107", "D106", "I100", "I202", "I101"]
+import-order-style = "pycharm"
+statistics = true
+exclude = [
+    ".git",
+    "__pycache__",
+    ".github",
+    ".pytest_cache",
+    "venv"
+]
+
+
+[tool.pytest.ini_options]
+addopts = ["--disable-pytest-warnings", "--cov=tunsberg", "--cov-report=xml", "--cov-report=term-missing", "--cov-fail-under=90" ]
+testpaths = ["tests"]
