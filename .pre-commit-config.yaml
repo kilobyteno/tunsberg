@@ -1,0 +1,13 @@
+repos:
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.1.0
+    hooks:
+    - id: flake8
+      entry: pflake8
+      additional_dependencies: [flake8-print, flake8-quotes, flake8-use-fstring, pep8-naming, flake8-import-order, flake8-docstrings, pyproject-flake8]
+      exclude: ^(.git|__pycache__|.github|.pytest_cache|logs|migrations|provisioning|tools|venv)/.*\.py$
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: isort (python)
