@@ -21,4 +21,3 @@ def format_version_tag(name: str) -> str:
 
     # If the tag name is not formatted correctly, raise an error
     raise ValueError(f'Wrong tag name: {name}')
-

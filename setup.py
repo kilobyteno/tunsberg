@@ -4,6 +4,7 @@ from tunsberg import __name__ as name
 from tunsberg import __version__ as version
 from tunsberg.snippane import format_version_tag
 
+
 # Add README.md as long description using open() and read()
 with open('README.md') as f:
     readme = f.read()
@@ -16,7 +17,8 @@ with open('requirements.txt') as f:
 setuptools.setup(
     name=name,
     version=version,
-    description='A collection of opinionated methods, functions, classes and utils for Python, Flask and Flask-RestX.',
+    description='A collection of opinionated methods, functions, classes and '
+                'utils for Python, Flask and Flask-RestX.',
     long_description=readme,
     long_description_content_type='text/markdown',
     project_urls={
