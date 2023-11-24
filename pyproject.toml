@@ -19,6 +19,7 @@ exclude = [
     ".pytest_cache",
     "venv"
 ]
+per-file-ignores = "*test_*: D102"
 
 
 [tool.pytest.ini_options]
