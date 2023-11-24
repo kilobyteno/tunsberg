@@ -1,0 +1,48 @@
+name: "Release"
+
+on:
+  release:
+    types: [ created ]
+    branches:
+      - main
+
+jobs:
+  pypi-publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/tunsberg
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.KILOBYTE_BOT_PAT }}
+          fetch-tags: true
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r all.txt
+      - name: Git Config
+        run: |
+          git config --global user.email "hei@kilobyte.no"
+          git config --global user.name "kilobyte-bot"
+      - name: Update __version__ in __init__.py
+        run: |
+          echo "Version: ${{ github.ref_name }}"
+          sed -i "s/__version__ = .*/__version__ = '${{ github.ref_name }}'/" ./tunsberg/__init__.py
+          cat ./tunsberg/__init__.py
+          git commit -am "Bump version to ${{ github.ref_name }}"
+          git push origin HEAD:main
+      - name: Build package
+        run: |
+          python setup.py bdist_wheel
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
