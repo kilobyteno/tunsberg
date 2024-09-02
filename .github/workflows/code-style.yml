@@ -33,7 +33,7 @@ jobs:
         run: |
           flake8
       - name: Check for vulnerabilities
-        uses: pypa/gh-action-pip-audit@v1.0.8
+        uses: pypa/gh-action-pip-audit@v1.1.0
         with:
           inputs: requirements.txt
       - name: Run Tests
