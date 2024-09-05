@@ -248,7 +248,7 @@ def response_not_implemented(message: str = 'Not implemented') -> JSONResponse:
     return generate_json_response(ResponseModel(status_code=status.HTTP_501_NOT_IMPLEMENTED, message=message))
 
 
-def response_custom(message: str = 'An unknown error has occurred', status_code: int = 500) -> JSONResponse:
+def response_custom(message: str = 'An unknown error has occurred', status_code: int = 500, data: Optional[Any] = None) -> JSONResponse:
     """
     Use this response when a response is needed with a custom message and status code.
 
@@ -256,7 +256,9 @@ def response_custom(message: str = 'An unknown error has occurred', status_code:
     :type message: str
     :param status_code: Status code to be returned
     :type status_code: int
+    :param data: Any additional data to be returned
+    :type data: Any
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status_code=status_code, message=message))
+    return generate_json_response(ResponseModel(status_code=status_code, message=message, data=data))
