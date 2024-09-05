@@ -126,7 +126,7 @@ def response_no_content() -> Response:
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-def response_bad_request(message: str = 'Invalid request', data: Optional[Any] = None) -> JSONResponse:
+def response_bad_request(message: str = 'Bad request', data: Optional[Any] = None) -> JSONResponse:
     """
     Use this response when a bad request is made.
 
@@ -188,7 +188,7 @@ def response_conflict(message: str = 'Resource already exists') -> JSONResponse:
     return generate_json_response(ResponseModel(status_code=status.HTTP_409_CONFLICT, message=message))
 
 
-def response_content_too_large(message: str = 'Content too large') -> JSONResponse:
+def response_request_entity_too_large(message: str = 'Request entity too large') -> JSONResponse:
     """
     Use this response when a request is too large.
 
