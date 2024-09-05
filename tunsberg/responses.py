@@ -102,7 +102,7 @@ def response_pagination(message: str = 'Resources was successfully retrieved', d
     return generate_json_response(ResponsePaginationModel(status_code=status.HTTP_200_OK, message=message, data=data, pagination=page_info))
 
 
-def response_created(message: str, data: Optional[Any] = None) -> JSONResponse:
+def response_created(message: str = 'Resource was successfully created', data: Optional[Any] = None) -> JSONResponse:
     """
     Use this response when a resource is successfully created.
 
