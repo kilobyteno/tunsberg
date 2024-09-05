@@ -20,7 +20,6 @@ class Pagination(BaseModel):
 class ResponseModel(BaseModel):
     """Base Response model"""
 
-    status: str
     status_code: int
     message: str
     data: Optional[Dict[str, Any]] | Optional[List[Any]] | Optional[str] = None
@@ -50,7 +49,6 @@ def generate_json_response(response: ResponseModel) -> JSONResponse:
     :rtype: Tuple[Dict[str, Any], int]
     """
     content = dict()
-    content['status'] = response.status
     content['status_code'] = response.status_code
     content['message'] = response.message
     background = None
@@ -81,7 +79,7 @@ def response_success(message: str = 'Resources was successfully retrieved', data
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Success', status_code=200, message=message, data=data, background_tasks=background_tasks))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_200_OK, message=message, data=data, background_tasks=background_tasks))
 
 
 def response_pagination(message: str = 'Resources was successfully retrieved', data: Optional[Any] = None, pagination: Optional[Page] = None) -> JSONResponse:
@@ -101,7 +99,7 @@ def response_pagination(message: str = 'Resources was successfully retrieved', d
     if pagination:
         page_info = Pagination(page=pagination.page, total=pagination.total, size=pagination.size, pages=pagination.pages)
 
-    return generate_json_response(ResponsePaginationModel(status='Success', status_code=200, message=message, data=data, pagination=page_info))
+    return generate_json_response(ResponsePaginationModel(status_code=status.HTTP_200_OK, message=message, data=data, pagination=page_info))
 
 
 def response_created(message: str, data: Optional[Any] = None) -> JSONResponse:
@@ -115,7 +113,7 @@ def response_created(message: str, data: Optional[Any] = None) -> JSONResponse:
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Created', status_code=201, message=message, data=data))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_201_CREATED, message=message, data=data))
 
 
 def response_no_content() -> Response:
@@ -139,7 +137,7 @@ def response_bad_request(message: str = 'Invalid request', data: Optional[Any] =
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Bad Request', status_code=400, message=message, data=data))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_400_BAD_REQUEST, message=message, data=data))
 
 
 def response_unauthorized(message: str = 'Unauthorized') -> JSONResponse:
@@ -151,7 +149,7 @@ def response_unauthorized(message: str = 'Unauthorized') -> JSONResponse:
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Unauthorized', status_code=401, message=message))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_401_UNAUTHORIZED, message=message))
 
 
 def response_forbidden(message: str = 'Forbidden') -> JSONResponse:
@@ -163,7 +161,7 @@ def response_forbidden(message: str = 'Forbidden') -> JSONResponse:
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Forbidden', status_code=403, message=message))
+    return generate_json_response(ResponseModel(status_code=403, message=message))
 
 
 def response_not_found(message: str = 'Resource not found') -> JSONResponse:
@@ -175,7 +173,7 @@ def response_not_found(message: str = 'Resource not found') -> JSONResponse:
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Not Found', status_code=404, message=message))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_404_NOT_FOUND, message=message))
 
 
 def response_conflict(message: str = 'Resource already exists') -> JSONResponse:
@@ -187,7 +185,7 @@ def response_conflict(message: str = 'Resource already exists') -> JSONResponse:
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Conflict', status_code=409, message=message))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_409_CONFLICT, message=message))
 
 
 def response_content_too_large(message: str = 'Content too large') -> JSONResponse:
@@ -199,7 +197,7 @@ def response_content_too_large(message: str = 'Content too large') -> JSONRespon
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Request Entity Too Large', status_code=413, message=message))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, message=message))
 
 
 def response_unsupported_media_type(message: str = 'Unsupported media type') -> JSONResponse:
@@ -211,7 +209,7 @@ def response_unsupported_media_type(message: str = 'Unsupported media type') -> 
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Unsupported Media Type', status_code=415, message=message))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, message=message))
 
 
 def response_internal_server_error(message: str = 'Internal server error') -> JSONResponse:
@@ -223,7 +221,7 @@ def response_internal_server_error(message: str = 'Internal server error') -> JS
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Internal Server Error', status_code=500, message=message))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=message))
 
 
 def response_service_unavailable(message: str = 'Service unavailable') -> JSONResponse:
@@ -235,7 +233,7 @@ def response_service_unavailable(message: str = 'Service unavailable') -> JSONRe
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Service Unavailable', status_code=503, message=message))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, message=message))
 
 
 def response_not_implemented(message: str = 'Not implemented') -> JSONResponse:
@@ -247,15 +245,13 @@ def response_not_implemented(message: str = 'Not implemented') -> JSONResponse:
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status='Not Implemented', status_code=501, message=message))
+    return generate_json_response(ResponseModel(status_code=status.HTTP_501_NOT_IMPLEMENTED, message=message))
 
 
-def response_custom(status: str = 'Unknown error', message: str = 'An unknown error has occurred', status_code: int = 500) -> JSONResponse:
+def response_custom(message: str = 'An unknown error has occurred', status_code: int = 500) -> JSONResponse:
     """
-    Use this response when a custom error occurs.
+    Use this response when a response is needed with a custom message and status code.
 
-    :param status: Status to be returned
-    :type status: str
     :param message: Message to be returned
     :type message: str
     :param status_code: Status code to be returned
@@ -263,4 +259,4 @@ def response_custom(status: str = 'Unknown error', message: str = 'An unknown er
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    return generate_json_response(ResponseModel(status=status, status_code=status_code, message=message))
+    return generate_json_response(ResponseModel(status_code=status_code, message=message))
