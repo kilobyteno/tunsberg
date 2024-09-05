@@ -1,4 +1,5 @@
-""" Common utilities for the package """
+"""Common utilities for the package"""
+
 import re
 
 

@@ -4,7 +4,7 @@
 [![Downloads](https://pepy.tech/badge/tunsberg)](https://pepy.tech/project/tunsberg)
 [![License](https://img.shields.io/github/license/kilobyteno/tunsberg)](LICENSE)
 
-A collection of opinionated methods, functions, classes and utils for Python, Flask and Flask-RestX.
+A collection of opinionated methods, functions, classes and utils for Python, FastAPI and related libraries.
 
 ## Installation
 
