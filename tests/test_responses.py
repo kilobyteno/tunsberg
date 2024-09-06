@@ -1,269 +1,293 @@
-from tunsberg.responses import response_bad_request, response_conflict, response_created, response_error, response_forbidden, response_gone, \
-    response_method_not_allowed, response_no_content, response_not_found, response_payload_too_large, response_service_unavailable, response_success, \
-    response_too_many_requests, response_unauthorized, response_unsupported_media_type
+from fastapi_pagination import Page
+from starlette import status
+
+from tunsberg.responses import (
+    ResponseModel,
+    generate_json_response,
+    response_bad_request,
+    response_conflict,
+    response_created,
+    response_custom,
+    response_forbidden,
+    response_internal_server_error,
+    response_no_content,
+    response_not_found,
+    response_not_implemented,
+    response_pagination,
+    response_request_entity_too_large,
+    response_service_unavailable,
+    response_success,
+    response_unauthorized,
+    response_unsupported_media_type,
+)
+
+
+class TestGenerateJsonResponse:
+    # Generates JSON response with status code and message
+    def test_generates_json_response_with_status_code_and_message(self):
+        response_model = ResponseModel(status_code=status.HTTP_200_OK, message='Success')
+        response = generate_json_response(response_model)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Success"}'
+
+    # Handles None data gracefully
+    def test_handles_none_data_gracefully(self):
+        response_model = ResponseModel(status_code=status.HTTP_200_OK, message='Success', data=None)
+        response = generate_json_response(response_model)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Success"}'
+
+    # Handles empty dictionary data
+    def test_handles_empty_dictionary_data(self):
+        response_model = ResponseModel(status_code=status.HTTP_200_OK, message='Success', data={})
+        response = generate_json_response(response_model)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Success"}'
 
 
 class TestResponseSuccess:
-
-    def test_success_default(self):
-        expected_response = ({'status': 'Success', 'message': 'Resource(s) were successfully retrieved', 'data': None}, 200)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 200 when called with default parameters"""
         response = response_success()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Resources was successfully retrieved"}'
 
-    def test_success_custom_message(self):
-        expected_response = ({'status': 'Success', 'message': 'Custom success message', 'data': None}, 200)
-        response = response_success(message='Custom success message')
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_success('Custom message')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Custom message"}'
 
-    def test_success_custom_data(self):
-        expected_response = ({'status': 'Success', 'message': 'Resource(s) were successfully retrieved', 'data': {'key': 'value'}}, 200)
+    def test_custom_data(self):
+        """Returns a JSONResponse with custom data when called with custom data"""
         response = response_success(data={'key': 'value'})
-        assert response == expected_response
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Resources was successfully retrieved","data":{"key":"value"}}'
+
+
+class TestResponsePagination:
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 200 when called with default parameters"""
+        response = response_pagination()
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Resources was successfully retrieved"}'
+
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_pagination('Custom message')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Custom message"}'
+
+    def test_custom_data(self):
+        """Returns a JSONResponse with custom data when called with custom data"""
+        response = response_pagination(data={'key': 'value'})
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Resources was successfully retrieved","data":{"key":"value"}}'
+
+    def test_response_with_pagination_data(self):
+        """Generates a JSON response with a 200 status code when pagination data is provided"""
+        pagination = Page(page=1, total=11, size=10, pages=2, items=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+        response = response_pagination(message='Test message', data={'key': 'value'}, pagination=pagination)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Test message","data":{"key":"value"},"pagination":{"total":11,"page":1,"size":10,"pages":2}}'
 
 
 class TestResponseCreated:
-
-    def test_created_default(self):
-        expected_response = ({'status': 'Created', 'message': 'Resource created successfully', 'data': None}, 201)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 201 when called with default parameters"""
         response = response_created()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.body == b'{"status_code":201,"message":"Resource was successfully created"}'
 
-    def test_created_custom_message(self):
-        expected_response = ({'status': 'Created', 'message': 'Custom created message', 'data': None}, 201)
-        response = response_created(message='Custom created message')
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_created('Custom message')
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.body == b'{"status_code":201,"message":"Custom message"}'
 
-    def test_created_custom_data(self):
-        expected_response = ({'status': 'Created', 'message': 'Resource created successfully', 'data': {'key': 'value'}}, 201)
+    def test_custom_data(self):
+        """Returns a JSONResponse with custom data when called with custom data"""
         response = response_created(data={'key': 'value'})
-        assert response == expected_response
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.body == b'{"status_code":201,"message":"Resource was successfully created","data":{"key":"value"}}'
 
 
 class TestResponseNoContent:
-
-    def test_no_content_default(self):
-        expected_response = ({'status': 'No Content', 'message': 'Resource was successfully deleted', 'data': None}, 204)
+    def test_default_parameters(self):
+        """Returns a Response with status code 204 when called with default parameters"""
         response = response_no_content()
-        assert response == expected_response
-
-    def test_no_content_custom_message(self):
-        expected_response = ({'status': 'No Content', 'message': 'Custom no content message', 'data': None}, 204)
-        response = response_no_content(message='Custom no content message')
-        assert response == expected_response
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert response.body == b''
 
 
 class TestResponseBadRequest:
-
-    def test_bad_request_default(self):
-        expected_response = ({'status': 'Bad Request', 'message': 'Input validation failed', 'data': None}, 400)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 400 when called with default parameters"""
         response = response_bad_request()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.body == b'{"status_code":400,"message":"Bad request"}'
 
-    def test_bad_request_custom_message(self):
-        expected_response = ({'status': 'Bad Request', 'message': 'Custom bad request message', 'data': None}, 400)
-        response = response_bad_request(message='Custom bad request message')
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_bad_request('Custom message')
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.body == b'{"status_code":400,"message":"Custom message"}'
 
-    def test_bad_request_custom_data(self):
-        expected_response = ({'status': 'Bad Request', 'message': 'Input validation failed', 'data': {'key': 'value'}}, 400)
+    def test_custom_data(self):
+        """Returns a JSONResponse with custom data when called with custom data"""
         response = response_bad_request(data={'key': 'value'})
-        assert response == expected_response
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.body == b'{"status_code":400,"message":"Bad request","data":{"key":"value"}}'
 
 
 class TestResponseUnauthorized:
-
-    def test_unauthorized_default(self):
-        expected_response = ({'status': 'Unauthorized', 'message': 'Missing or invalid credentials', 'data': None}, 401)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 401 when called with default parameters"""
         response = response_unauthorized()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.body == b'{"status_code":401,"message":"Unauthorized"}'
 
-    def test_unauthorized_custom_message(self):
-        expected_response = ({'status': 'Unauthorized', 'message': 'Custom unauthorized message', 'data': None}, 401)
-        response = response_unauthorized(message='Custom unauthorized message')
-        assert response == expected_response
-
-    def test_unauthorized_custom_data(self):
-        expected_response = ({'status': 'Unauthorized', 'message': 'Missing or invalid credentials', 'data': {'key': 'value'}}, 401)
-        response = response_unauthorized(data={'key': 'value'})
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_unauthorized('Custom message')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.body == b'{"status_code":401,"message":"Custom message"}'
 
 
 class TestResponseForbidden:
-
-    def test_forbidden_default(self):
-        expected_response = ({'status': 'Forbidden', 'message': 'User is not authorized to perform this action', 'data': None}, 403)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 403 when called with default parameters"""
         response = response_forbidden()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.body == b'{"status_code":403,"message":"Forbidden"}'
 
-    def test_forbidden_custom_message(self):
-        expected_response = ({'status': 'Forbidden', 'message': 'Custom forbidden message', 'data': None}, 403)
-        response = response_forbidden(message='Custom forbidden message')
-        assert response == expected_response
-
-    def test_forbidden_custom_data(self):
-        expected_response = ({'status': 'Forbidden', 'message': 'User is not authorized to perform this action', 'data': {'key': 'value'}}, 403)
-        response = response_forbidden(data={'key': 'value'})
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_forbidden('Custom message')
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.body == b'{"status_code":403,"message":"Custom message"}'
 
 
 class TestResponseNotFound:
-
-    def test_not_found_default(self):
-        expected_response = ({'status': 'Not Found', 'message': 'Requested resource not found', 'data': None}, 404)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 404 when called with default parameters"""
         response = response_not_found()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.body == b'{"status_code":404,"message":"Resource not found"}'
 
-    def test_not_found_custom_message(self):
-        expected_response = ({'status': 'Not Found', 'message': 'Custom not found message', 'data': None}, 404)
-        response = response_not_found(message='Custom not found message')
-        assert response == expected_response
-
-    def test_not_found_custom_data(self):
-        expected_response = ({'status': 'Not Found', 'message': 'Requested resource not found', 'data': {'key': 'value'}}, 404)
-        response = response_not_found(data={'key': 'value'})
-        assert response == expected_response
-
-
-class TestResponseMethodNotAllowed:
-
-    def test_method_not_allowed_default(self):
-        expected_response = ({'status': 'Method Not Allowed', 'message': 'This method is not allowed', 'data': None}, 405)
-        response = response_method_not_allowed()
-        assert response == expected_response
-
-    def test_method_not_allowed_custom_message(self):
-        expected_response = ({'status': 'Method Not Allowed', 'message': 'Custom method not allowed message', 'data': None}, 405)
-        response = response_method_not_allowed(message='Custom method not allowed message')
-        assert response == expected_response
-
-    def test_method_not_allowed_custom_data(self):
-        expected_response = ({'status': 'Method Not Allowed', 'message': 'This method is not allowed', 'data': {'key': 'value'}}, 405)
-        response = response_method_not_allowed(data={'key': 'value'})
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_not_found('Custom message')
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.body == b'{"status_code":404,"message":"Custom message"}'
 
 
 class TestResponseConflict:
-
-    def test_conflict_default(self):
-        expected_response = ({'status': 'Conflict', 'message': 'Conflict with the current state of the target resource', 'data': None}, 409)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 409 when called with default parameters"""
         response = response_conflict()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_409_CONFLICT
+        assert response.body == b'{"status_code":409,"message":"Resource already exists"}'
 
-    def test_conflict_custom_message(self):
-        expected_response = ({'status': 'Conflict', 'message': 'Custom conflict message', 'data': None}, 409)
-        response = response_conflict(message='Custom conflict message')
-        assert response == expected_response
-
-    def test_conflict_custom_data(self):
-        expected_response = ({'status': 'Conflict', 'message': 'Conflict with the current state of the target resource', 'data': {'key': 'value'}}, 409)
-        response = response_conflict(data={'key': 'value'})
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_conflict('Custom message')
+        assert response.status_code == status.HTTP_409_CONFLICT
+        assert response.body == b'{"status_code":409,"message":"Custom message"}'
 
 
-class TestResponseGone:
+class TestResponseContentTooLarge:
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 413 when called with default parameters"""
+        response = response_request_entity_too_large()
+        assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+        assert response.body == b'{"status_code":413,"message":"Request entity too large"}'
 
-    def test_gone_default(self):
-        expected_response = ({'status': 'Gone', 'message': 'Resource no longer available', 'data': None}, 410)
-        response = response_gone()
-        assert response == expected_response
-
-    def test_gone_custom_message(self):
-        expected_response = ({'status': 'Gone', 'message': 'Custom gone message', 'data': None}, 410)
-        response = response_gone(message='Custom gone message')
-        assert response == expected_response
-
-    def test_gone_custom_data(self):
-        expected_response = ({'status': 'Gone', 'message': 'Resource no longer available', 'data': {'key': 'value'}}, 410)
-        response = response_gone(data={'key': 'value'})
-        assert response == expected_response
-
-
-class TestResponsePayloadTooLarge:
-
-    def test_payload_too_large_default(self):
-        expected_response = ({'status': 'Payload Too Large', 'message': 'Payload exceeds the allowed limit', 'data': None}, 413)
-        response = response_payload_too_large()
-        assert response == expected_response
-
-    def test_payload_too_large_custom_message(self):
-        expected_response = ({'status': 'Payload Too Large', 'message': 'Custom payload too large message', 'data': None}, 413)
-        response = response_payload_too_large(message='Custom payload too large message')
-        assert response == expected_response
-
-    def test_payload_too_large_custom_data(self):
-        expected_response = ({'status': 'Payload Too Large', 'message': 'Payload exceeds the allowed limit', 'data': {'key': 'value'}}, 413)
-        response = response_payload_too_large(data={'key': 'value'})
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_request_entity_too_large('Custom message')
+        assert response.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+        assert response.body == b'{"status_code":413,"message":"Custom message"}'
 
 
 class TestResponseUnsupportedMediaType:
-
-    def test_unsupported_media_type_default(self):
-        expected_response = ({'status': 'Unsupported Media Type', 'message': 'Unsupported media type', 'data': None}, 415)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 415 when called with default parameters"""
         response = response_unsupported_media_type()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+        assert response.body == b'{"status_code":415,"message":"Unsupported media type"}'
 
-    def test_unsupported_media_type_custom_message(self):
-        expected_response = ({'status': 'Unsupported Media Type', 'message': 'Custom message', 'data': None}, 415)
-        response = response_unsupported_media_type(message='Custom message')
-        assert response == expected_response
-
-    def test_unsupported_media_type_custom_data(self):
-        expected_response = ({'status': 'Unsupported Media Type', 'message': 'Unsupported media type', 'data': {'key': 'value'}}, 415)
-        response = response_unsupported_media_type(data={'key': 'value'})
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_unsupported_media_type('Custom message')
+        assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+        assert response.body == b'{"status_code":415,"message":"Custom message"}'
 
 
-class TestResponseTooManyRequests:
+class TestResponseInternalServerError:
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 500 when called with default parameters"""
+        response = response_internal_server_error()
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.body == b'{"status_code":500,"message":"Internal server error"}'
 
-    def test_too_many_requests_default(self):
-        expected_response = ({'status': 'Too Many Requests', 'message': 'Client has sent too many requests in a given amount of time', 'data': None}, 429)
-        response = response_too_many_requests()
-        assert response == expected_response
-
-    def test_too_many_requests_custom_message(self):
-        expected_response = ({'status': 'Too Many Requests', 'message': 'Custom rate limit message', 'data': None}, 429)
-        response = response_too_many_requests(message='Custom rate limit message')
-        assert response == expected_response
-
-    def test_too_many_requests_custom_data(self):
-        expected_response = (
-            {'status': 'Too Many Requests', 'message': 'Client has sent too many requests in a given amount of time', 'data': {'key': 'value'}}, 429)
-        response = response_too_many_requests(data={'key': 'value'})
-        assert response == expected_response
-
-
-class TestResponseError:
-
-    def test_error_default(self):
-        expected_response = ({'status': 'Internal Server Error', 'message': 'An error occurred', 'data': None}, 500)
-        response = response_error()
-        assert response == expected_response
-
-    def test_error_custom_message(self):
-        expected_response = ({'status': 'Internal Server Error', 'message': 'Custom error message', 'data': None}, 500)
-        response = response_error(message='Custom error message')
-        assert response == expected_response
-
-    def test_error_custom_data(self):
-        expected_response = ({'status': 'Internal Server Error', 'message': 'An error occurred', 'data': {'key': 'value'}}, 500)
-        response = response_error(data={'key': 'value'})
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_internal_server_error('Custom message')
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.body == b'{"status_code":500,"message":"Custom message"}'
 
 
 class TestResponseServiceUnavailable:
-
-    def test_service_unavailable_default(self):
-        expected_response = ({'status': 'Service Unavailable', 'message': 'Service temporarily unavailable', 'data': None}, 503)
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 503 when called with default parameters"""
         response = response_service_unavailable()
-        assert response == expected_response
+        assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
+        assert response.body == b'{"status_code":503,"message":"Service unavailable"}'
 
-    def test_service_unavailable_custom_message(self):
-        expected_response = ({'status': 'Service Unavailable', 'message': 'Custom unavailable message', 'data': None}, 503)
-        response = response_service_unavailable(message='Custom unavailable message')
-        assert response == expected_response
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_service_unavailable('Custom message')
+        assert response.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
+        assert response.body == b'{"status_code":503,"message":"Custom message"}'
 
-    def test_service_unavailable_custom_data(self):
-        expected_response = ({'status': 'Service Unavailable', 'message': 'Service temporarily unavailable', 'data': {'key': 'value'}}, 503)
-        response = response_service_unavailable(data={'key': 'value'})
-        assert response == expected_response
+
+class TestResponseNotImplemented:
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 501 when called with default parameters"""
+        response = response_not_implemented()
+        assert response.status_code == status.HTTP_501_NOT_IMPLEMENTED
+        assert response.body == b'{"status_code":501,"message":"Not implemented"}'
+
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_not_implemented('Custom message')
+        assert response.status_code == status.HTTP_501_NOT_IMPLEMENTED
+        assert response.body == b'{"status_code":501,"message":"Custom message"}'
+
+
+class TestResponseCustom:
+    def test_default_parameters(self):
+        """Returns a JSONResponse with status code 500 when called with default parameters"""
+        response = response_custom()
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.body == b'{"status_code":500,"message":"An unknown error has occurred"}'
+
+    def test_custom_message(self):
+        """Returns a JSONResponse with a custom message when called with custom message"""
+        response = response_custom('Custom message')
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.body == b'{"status_code":500,"message":"Custom message"}'
+
+    def test_custom_status_code(self):
+        """Returns a JSONResponse with a custom status code when called with custom status code"""
+        response = response_custom(status_code=404)
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.body == b'{"status_code":404,"message":"An unknown error has occurred"}'
+
+    def test_custom_data(self):
+        """Returns a JSONResponse with custom data when called with custom data"""
+        response = response_custom(data={'key': 'value'})
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        assert response.body == b'{"status_code":500,"message":"An unknown error has occurred","data":{"key":"value"}}'

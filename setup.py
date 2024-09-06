@@ -2,14 +2,13 @@ import setuptools
 
 from tunsberg import __name__ as name
 from tunsberg import __version__ as version
-from tunsberg.snippane import format_version_tag
+from tunsberg.utsikten import format_version_tag
 
-
-# Add README.md as long description using open() and read()
+# Add README.md as long description
 with open('README.md') as f:
     readme = f.read()
 
-# Add requirements.txt as install_requires using open() and readlines()
+# Add requirements.txt as requirements
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
@@ -17,8 +16,7 @@ with open('requirements.txt') as f:
 setuptools.setup(
     name=name,
     version=version,
-    description='A collection of opinionated methods, functions, classes and '
-                'utils for Python, Flask and Flask-RestX.',
+    description='A collection of opinionated methods, functions, classes and utils for Python, FastAPI and related libraries.',
     long_description=readme,
     long_description_content_type='text/markdown',
     project_urls={
@@ -27,7 +25,7 @@ setuptools.setup(
     url='https://github.com/kilobyteno/tunsberg',
     author='Kilobyte AS',
     license='MIT',
-    python_requires='>=3.8',
+    python_requires='>=3.10',
     packages=['tunsberg'],
     include_package_data=True,
     install_requires=requirements,
@@ -41,9 +39,8 @@ setuptools.setup(
     classifiers=[
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
-    ]
+        'Programming Language :: Python :: 3.12',
+    ],
 )

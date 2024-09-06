@@ -1,4 +1,4 @@
-""" Init file for the package """
+"""Init file for the package"""
 
 __name__ = 'tunsberg'
 __version__ = '0.0.5'

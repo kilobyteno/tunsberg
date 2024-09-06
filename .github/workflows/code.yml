@@ -1,4 +1,4 @@
-name: "Code Style"
+name: "Code"
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ "3.8", "3.9", "3.10" ]
+        python-version: [ "3.10", "3.11", "3.12" ]
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -28,10 +28,9 @@ jobs:
       - name: Install All Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r all.txt
-      - name: Run flake8
-        run: |
-          flake8
+          pip install -r requirements-dev.txt
+      - name: Run Ruff
+        run: ruff check --output-format=github
       - name: Check for vulnerabilities
         uses: pypa/gh-action-pip-audit@v1.1.0
         with:

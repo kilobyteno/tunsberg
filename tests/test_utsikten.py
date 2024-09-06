@@ -1,6 +1,6 @@
 import pytest
 
-from tunsberg.snippane import format_version_tag
+from tunsberg.utsikten import format_version_tag
 
 
 class TestFormatVersionTag:
