@@ -2,26 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## 0.1.0 - 2024-09-06
-
-### Breaking change
-
-⚠️ **If you are using Flask please keep using <0.5.0, this version and up will only support FastAPI.** ⚠️
-
-### What's Changed
-
-* Bump codecov/codecov-action from 3 to 4 by @dependabot in https://github.com/kilobyteno/tunsberg/pull/4
-* Bump SethCohen/github-releases-to-discord from 1.13.1 to 1.15.0 by @dependabot in https://github.com/kilobyteno/tunsberg/pull/3
-* Bump actions/setup-python from 4 to 5 by @dependabot in https://github.com/kilobyteno/tunsberg/pull/2
-* Bump pypa/gh-action-pip-audit from 1.0.8 to 1.1.0 by @dependabot in https://github.com/kilobyteno/tunsberg/pull/5
-* Release 0.1.0 by @dsbilling in https://github.com/kilobyteno/tunsberg/pull/6
-
-### New Contributors
-
-* @dependabot made their first contribution in https://github.com/kilobyteno/tunsberg/pull/4
-* @dsbilling made their first contribution in https://github.com/kilobyteno/tunsberg/pull/6
-
-**Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.0.5...0.1.0
 
 ## 0.0.5 - 2023-12-03
 
