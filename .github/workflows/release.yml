@@ -50,7 +50,7 @@ jobs:
             -   name: Install dependencies
                 run: |
                     python -m pip install --upgrade pip
-                    pip install -r all.txt
+                    pip install -r requirements-dev.txt
             -   name: Git Config
                 run: |
                     git config --global user.email "hei@kilobyte.no"
