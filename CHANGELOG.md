@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.1 - 2024-09-12
+
+**Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.1.0...0.1.1
+
 ## 0.1.0 - 2024-09-06
 
 ### Breaking change
