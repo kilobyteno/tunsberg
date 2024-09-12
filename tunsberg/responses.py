@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from fastapi import Query
 from fastapi_pagination import Page, Params
@@ -22,7 +22,7 @@ class ResponseModel(BaseModel):
 
     status_code: int
     message: str
-    data: Optional[Dict[str, Any]] | Optional[List[Any]] | Optional[str] = None
+    data: Optional[Union[Dict[str, Any], List[Any], str]] = None
     pagination: Optional[Pagination] = Field(None, exclude=True)
     background_tasks: Optional[Any] = Field(None, exclude=True)
 

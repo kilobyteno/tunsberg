@@ -25,7 +25,7 @@ setuptools.setup(
     url='https://github.com/kilobyteno/tunsberg',
     author='Kilobyte AS',
     license='MIT',
-    python_requires='>=3.10',
+    python_requires='>=3.9',
     packages=['tunsberg'],
     include_package_data=True,
     install_requires=requirements,
@@ -39,6 +39,7 @@ setuptools.setup(
     classifiers=[
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
