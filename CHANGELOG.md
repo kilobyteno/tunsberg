@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.2 - 2024-10-08
+
+### What's Changed
+
+* Bump SethCohen/github-releases-to-discord from 1.15.0 to 1.15.1 by @dependabot in https://github.com/kilobyteno/tunsberg/pull/7
+* Added default uvicorn config by @dsbilling in https://github.com/kilobyteno/tunsberg/pull/8
+
+**Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.1.1...0.1.2
+
 ## 0.1.1 - 2024-09-12
 
 **Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.1.0...0.1.1
