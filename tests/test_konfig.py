@@ -1,8 +1,9 @@
 import logging
+import os
 
 import pytest
 
-from tunsberg.konfig import uvicorn_log_config
+from tunsberg.konfig import check_required_env_vars, uvicorn_log_config
 
 
 class TestUvicornLogConfig:
@@ -55,3 +56,38 @@ class TestUvicornLogConfig:
         assert config['loggers']['uvicorn']['level'] == logging.getLevelName(log_lvl)
         assert config['loggers']['uvicorn.error']['level'] == logging.getLevelName(log_lvl)
         assert config['loggers']['uvicorn.access']['level'] == logging.getLevelName(log_lvl)
+
+
+class TestCheckRequiredEnvVars:
+    # Set the environment variable for testing
+    os.environ['RANDOM_ENV_VAR'] = 'random_value'
+
+    def test_validate_if_true_in_local_development_env(self):
+        req_envs = {'RANDOM_ENV_VAR': {'runtime': True, 'build': True}}
+        check = check_required_env_vars(required_env_vars=req_envs, env='local')
+        assert check
+
+    def test_validate_if_true_in_staging_env(self):
+        req_envs = {'RANDOM_ENV_VAR': {'runtime': True, 'build': True}}
+        check = check_required_env_vars(required_env_vars=req_envs, env='staging', live_envs=['staging'])
+        assert check
+
+    def test_validate_if_true_in_prod_env(self):
+        req_envs = {'RANDOM_ENV_VAR': {'runtime': True, 'build': True}}
+        check = check_required_env_vars(required_env_vars=req_envs, env='prod', live_envs=['prod'])
+        assert check
+
+    def test_validate_that_it_fails_if_env_var_is_not_set(self):
+        req_envs = {'SOME_OTHER_RANDOM_ENV_VAR': {'runtime': True, 'build': True}}
+        with pytest.raises(ValueError):
+            check_required_env_vars(required_env_vars=req_envs, env='production', live_envs=['production'])
+
+    def test_validate_that_it_fails_for_code_build_if_env_var_is_not_set(self):
+        req_envs = {'SOME_OTHER_RANDOM_ENV_VAR': {'runtime': False, 'build': True}}
+        with pytest.raises(ValueError):
+            check_required_env_vars(required_env_vars=req_envs, env='production', live_envs=['production'], code_build=True)
+
+    def test_validate_that_it_fails_for_runtime_if_env_var_is_not_set(self):
+        req_envs = {'SOME_OTHER_RANDOM_ENV_VAR': {'runtime': True, 'build': False}}
+        with pytest.raises(ValueError):
+            check_required_env_vars(required_env_vars=req_envs, env='production', live_envs=['production'])
