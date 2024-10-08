@@ -2,13 +2,13 @@ import logging
 
 import pytest
 
-from tunsberg.konfig import uvicorn_config
+from tunsberg.konfig import uvicorn_log_config
 
 
-class TestUvicornConfig:
+class TestUvicornLogConfig:
     def test_default_config(self):
         log_lvl = logging.NOTSET
-        config = uvicorn_config(log_level=log_lvl)
+        config = uvicorn_log_config(log_level=log_lvl)
         assert config['version'] == 1
         assert not config['disable_existing_loggers']
         assert config['formatters']['default']['format'] == '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
@@ -29,29 +29,29 @@ class TestUvicornConfig:
 
     def test_invalid_log_level(self):
         with pytest.raises(ValueError):
-            uvicorn_config(log_level=999)
+            uvicorn_log_config(log_level=999)
 
     def test_empty_log_format(self):
         with pytest.raises(ValueError):
-            uvicorn_config(log_level=logging.NOTSET, log_format='')
+            uvicorn_log_config(log_level=logging.NOTSET, log_format='')
 
     def test_empty_log_file_path(self):
         with pytest.raises(ValueError):
-            uvicorn_config(log_level=logging.NOTSET, log_file_path='')
+            uvicorn_log_config(log_level=logging.NOTSET, log_file_path='')
 
     def test_custom_log_format(self):
         log_format = '%(asctime)s - %(levelname)s - %(name)s - %(message)s - %(filename)s - %(lineno)s'
-        config = uvicorn_config(log_level=logging.NOTSET, log_format=log_format)
+        config = uvicorn_log_config(log_level=logging.NOTSET, log_format=log_format)
         assert config['formatters']['default']['format'] == log_format
 
     def test_custom_log_file_path(self):
         log_file_path = 'custom.log'
-        config = uvicorn_config(log_level=logging.NOTSET, log_file_path=log_file_path)
+        config = uvicorn_log_config(log_level=logging.NOTSET, log_file_path=log_file_path)
         assert config['handlers']['file']['filename'] == log_file_path
 
     def test_custom_log_level(self):
         log_lvl = logging.INFO
-        config = uvicorn_config(log_level=log_lvl)
+        config = uvicorn_log_config(log_level=log_lvl)
         assert config['loggers']['uvicorn']['level'] == logging.getLevelName(log_lvl)
         assert config['loggers']['uvicorn.error']['level'] == logging.getLevelName(log_lvl)
         assert config['loggers']['uvicorn.access']['level'] == logging.getLevelName(log_lvl)
