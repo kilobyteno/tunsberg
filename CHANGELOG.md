@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.4 - 2024-10-08
+
+### What's Changed
+
+* Added check_required_env_vars by @dsbilling in https://github.com/kilobyteno/tunsberg/pull/10
+
+**Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.1.3...0.1.4
+
 ## 0.1.3 - 2024-10-08
 
 ### What's Changed
