@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.1.3 - 2024-10-08
+
+### What's Changed
+
+* Renamed uvicorn_config to uvicorn_log_config by @dsbilling in https://github.com/kilobyteno/tunsberg/pull/9
+
+**Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.1.2...0.1.3
+
 ## 0.1.2 - 2024-10-08
 
 ### What's Changed
