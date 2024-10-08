@@ -106,7 +106,6 @@ def check_required_env_vars(required_env_vars: dict, env: str, live_envs: [] or 
 
     # Validate if all required environment variables are set
     missing_vars = [env_var for env_var in req_env_vars if getenv(env_var) is None]
-    logging.debug(missing_vars)
 
     if missing_vars:
         missing_vars_str = ', '.join(missing_vars)
