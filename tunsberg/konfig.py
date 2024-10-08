@@ -1,4 +1,5 @@
 import logging
+from os import getenv
 
 
 def uvicorn_config(
@@ -65,3 +66,50 @@ def uvicorn_config(
             },
         },
     }
+
+
+def check_required_env_vars(required_env_vars: dict, env: str, live_envs: [] or None = None, code_build: bool = False) -> bool or None:
+    """
+    Check if all required environment variables are set based on the current environment and if the code is being built.
+
+    Example for required_env_vars:
+        {'ENV': {'runtime': True, 'build': True},'JWT_PUBLIC_KEY': {'runtime': True, 'build': False}}
+
+    Example for env:
+        'production'
+
+    Example for live_envs:
+        ['production', 'prod']
+
+    :param required_env_vars: Required environment variables
+    :type required_env_vars: dict
+    :param env: Current environment
+    :type env: str
+    :param live_envs: List of live environments
+    :type live_envs: [] or None
+    :param code_build: Whether the code is being built
+    :type code_build: bool
+    :return: True if all required environment variables are set
+    :rtype: bool or None
+    :raises Exception: If any required environment variable is not set
+    """
+    if live_envs is None:
+        live_envs = ['production', 'prod']
+
+    is_runtime = env in live_envs and not code_build
+    is_code_build = code_build
+
+    # Select environment variables based on current environment (production or build)
+    req_env_vars = [
+        env_var for env_var, conditions in required_env_vars.items() if (conditions['runtime'] and is_runtime) or (conditions['build'] and is_code_build)
+    ]
+
+    # Validate if all required environment variables are set
+    missing_vars = [env_var for env_var in req_env_vars if getenv(env_var) is None]
+    logging.debug(missing_vars)
+
+    if missing_vars:
+        missing_vars_str = ', '.join(missing_vars)
+        raise ValueError(f'Environment Config Error: The following variables are not set: {missing_vars_str}')
+
+    return True
