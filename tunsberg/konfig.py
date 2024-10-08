@@ -91,7 +91,7 @@ def check_required_env_vars(required_env_vars: dict, env: str, live_envs: [] or 
     :type code_build: bool
     :return: True if all required environment variables are set
     :rtype: bool or None
-    :raises Exception: If any required environment variable is not set
+    :raises ValueError: If any required environment variable is not set
     """
     if live_envs is None:
         live_envs = ['production', 'prod']
