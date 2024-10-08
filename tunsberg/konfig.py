@@ -2,7 +2,7 @@ import logging
 from os import getenv
 
 
-def uvicorn_config(
+def uvicorn_log_config(
     log_level: int = logging.DEBUG, log_file_path: str = 'uvicorn.log', log_format: str = '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
 ) -> dict:
     """
