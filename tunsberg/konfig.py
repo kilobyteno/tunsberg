@@ -79,7 +79,7 @@ def check_required_env_vars(required_env_vars: dict, env: str, live_envs: [] or 
         'production'
 
     Example for live_envs:
-        ['production', 'prod']
+        ['production', 'prod', 'staging']
 
     :param required_env_vars: Required environment variables
     :type required_env_vars: dict
