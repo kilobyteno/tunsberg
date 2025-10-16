@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.0 - 2025-10-16
+
+### What's Changed
+
+* Introduced a new log_config function to replace uvicorn_log_config, supporting more flexible handler and formatter options, including a custom JSON formatter.
+* ⚠️ Marked uvicorn_log_config as deprecated.
+
+**Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.1.4...0.2.0
+
 ## 0.1.4 - 2024-10-08
 
 ### What's Changed
