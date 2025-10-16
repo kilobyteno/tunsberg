@@ -1,5 +1,130 @@
+import json
 import logging
+import warnings
+from datetime import datetime, timezone
 from os import getenv
+
+
+class JsonFormatter(logging.Formatter):
+    """Custom JSON log formatter"""
+
+    def format(self, record):
+        """Format log record as JSON"""
+        log_record = {
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'level': record.levelname,
+            'logger': record.name,
+            'module': record.module,
+            'line': record.lineno,
+            'message': record.getMessage(),
+        }
+
+        # Add exception info if available
+        if record.exc_info:
+            log_record['exception'] = self.formatException(record.exc_info)
+
+        return json.dumps(log_record)
+
+
+def log_config(  # noqa: PLR0913
+    log_level: int = logging.DEBUG,
+    log_file_path: str = 'fastapi.log',
+    log_format: str = '%(asctime)s - [%(levelname)s] %(name)s: %(message)s',
+    log_handlers=None,
+    log_formatter: str = 'default',
+    date_format: str = '%Y-%m-%d %H:%M:%S',
+) -> dict:
+    """
+    Generate a configuration dictionary for logging in FastAPI with Uvicorn.
+
+    :param log_level: Log level integer, defaults to logging.DEBUG
+    :type log_level: int
+    :param log_file_path: Path to the log file, defaults to 'fastapi.log'
+    :type log_file_path: str
+    :param log_format: Log format string, defaults to '%(asctime)s - [%(levelname)s] %(name)s: %(message)s'
+    :type log_format: str
+    :param log_handlers: List of log handlers, defaults to ['time_rotating_file', 'console']
+    :type log_handlers: list
+    :param log_formatter: Log formatter name, defaults to 'default'
+    :type log_formatter: str
+    :param date_format: Date format string, defaults to '%Y-%m-%d %H:%M:%S'
+    :type date_format: str
+    :return: Configuration dictionary
+    :rtype: dict
+    """
+    # Default to both time_rotating_file and console handlers if none are provided
+    if log_handlers is None:
+        log_handlers = ['time_rotating_file', 'console']
+
+    # Make sure the log level is valid
+    if logging.getLevelName(log_level) is None or logging.getLevelName(log_level).__contains__('Level'):
+        raise ValueError('Invalid log level')
+
+    # Make sure log format is not empty
+    if not log_format:
+        raise ValueError('Log format cannot be empty')
+
+    # Make sure log file path is not empty
+    if not log_file_path:
+        raise ValueError('Log file path cannot be empty')
+
+    return {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'default': {
+                'format': log_format,
+                'datefmt': date_format,
+            },
+            'json': {
+                '()': JsonFormatter,
+            },
+        },
+        'handlers': {
+            'file': {
+                'class': 'logging.FileHandler',
+                'filename': log_file_path,
+                'formatter': log_formatter,
+            },
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': log_formatter,
+            },
+            'rotating_file': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'formatter': log_formatter,
+                'filename': log_file_path,
+                'maxBytes': 10485760,  # 10 MB
+                'backupCount': 5,
+            },
+            'time_rotating_file': {
+                'class': 'logging.handlers.TimedRotatingFileHandler',
+                'formatter': log_formatter,
+                'filename': log_file_path,
+                'when': 'midnight',
+                'interval': 1,
+                'backupCount': 7,
+            },
+        },
+        'loggers': {
+            'uvicorn': {
+                'handlers': log_handlers,
+                'level': logging.getLevelName(log_level),
+                'propagate': False,
+            },
+            'uvicorn.error': {
+                'handlers': log_handlers,
+                'level': logging.getLevelName(log_level),
+                'propagate': False,
+            },
+            'uvicorn.access': {
+                'handlers': log_handlers,
+                'level': logging.getLevelName(log_level),
+                'propagate': False,
+            },
+        },
+        'root': {'handlers': ['console'], 'level': 'DEBUG'},
+    }
 
 
 def uvicorn_log_config(
@@ -7,6 +132,8 @@ def uvicorn_log_config(
 ) -> dict:
     """
     Generate a configuration dictionary for Uvicorn logging.
+
+    DEPRECATED: Use log_config() instead.
 
     :param log_level: Log level integer
     :type log_level: int
@@ -17,6 +144,8 @@ def uvicorn_log_config(
     :return: Configuration dictionary
     :rtype: dict
     """
+    warnings.deprecated('uvicorn_log_config is deprecated, use log_config instead', DeprecationWarning, stacklevel=2)
+
     # Make sure the log level is valid
     if logging.getLevelName(log_level) is None or logging.getLevelName(log_level).__contains__('Level'):
         raise ValueError('Invalid log level')
