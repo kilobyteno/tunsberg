@@ -1,4 +1,4 @@
 """Init file for the package"""
 
 __name__ = 'tunsberg'
-__version__ = '0.1.4'
+__version__ = '0.2.0'
