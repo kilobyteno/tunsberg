@@ -17,7 +17,7 @@ jobs:
             id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
         steps:
             -   name: Checkout repository
-                uses: actions/checkout@v5
+                uses: actions/checkout@v6
                 with:
                     fetch-depth: 0
                     token: ${{ secrets.KILOBYTE_BOT_PAT }}
