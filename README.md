@@ -12,6 +12,9 @@ A collection of opinionated methods, functions, classes and utils for Python, Fa
 pip install tunsberg
 ```
 
+## Usage
+Read the [docs](/docs).
+
 ## Testing
 
 ```bash
