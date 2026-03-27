@@ -1,9 +1,11 @@
+import json
 import logging
 import os
+import sys
 
 import pytest
 
-from tunsberg.konfig import check_required_env_vars, log_config
+from tunsberg.konfig import JsonFormatter, check_required_env_vars, log_config, uvicorn_log_config
 
 
 class TestLogConfig:
@@ -56,6 +58,64 @@ class TestLogConfig:
         assert config['loggers']['uvicorn']['level'] == logging.getLevelName(log_lvl)
         assert config['loggers']['uvicorn.error']['level'] == logging.getLevelName(log_lvl)
         assert config['loggers']['uvicorn.access']['level'] == logging.getLevelName(log_lvl)
+
+
+class TestJsonFormatter:
+    def test_format_emits_json_with_expected_keys(self):
+        formatter = JsonFormatter()
+        record = logging.LogRecord(
+            name='test.logger',
+            level=logging.INFO,
+            pathname='x.py',
+            lineno=10,
+            msg='hello',
+            args=(),
+            exc_info=None,
+        )
+        payload = json.loads(formatter.format(record))
+        assert payload['message'] == 'hello'
+        assert payload['level'] == 'INFO'
+        assert payload['logger'] == 'test.logger'
+        assert 'timestamp' in payload
+
+    def test_format_includes_exception_when_exc_info_set(self):
+        formatter = JsonFormatter()
+        try:
+            raise ValueError('boom')
+        except ValueError:
+            record = logging.LogRecord(
+                name='test',
+                level=logging.ERROR,
+                pathname='x.py',
+                lineno=1,
+                msg='failed',
+                args=(),
+                exc_info=sys.exc_info(),
+            )
+        payload = json.loads(formatter.format(record))
+        assert 'exception' in payload
+        assert 'ValueError' in payload['exception']
+
+
+class TestUvicornLogConfig:
+    def test_deprecated_success_returns_config(self):
+        with pytest.warns(DeprecationWarning, match='uvicorn_log_config'):
+            config = uvicorn_log_config()
+        assert config['version'] == 1
+        assert not config['disable_existing_loggers']
+        assert config['handlers']['file']['filename'] == 'uvicorn.log'
+
+    def test_invalid_log_level(self):
+        with pytest.warns(DeprecationWarning), pytest.raises(ValueError, match='Invalid log level'):
+            uvicorn_log_config(log_level=999)
+
+    def test_empty_log_format(self):
+        with pytest.warns(DeprecationWarning), pytest.raises(ValueError, match='Log format cannot be empty'):
+            uvicorn_log_config(log_format='')
+
+    def test_empty_log_file_path(self):
+        with pytest.warns(DeprecationWarning), pytest.raises(ValueError, match='Log file path cannot be empty'):
+            uvicorn_log_config(log_file_path='')
 
 
 class TestCheckRequiredEnvVars:

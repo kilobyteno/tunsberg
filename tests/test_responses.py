@@ -44,6 +44,22 @@ class TestGenerateJsonResponse:
         assert response.status_code == status.HTTP_200_OK
         assert response.body == b'{"status_code":200,"message":"Success"}'
 
+    def test_handles_json_string_data(self):
+        response_model = ResponseModel(status_code=status.HTTP_200_OK, message='Success', data='{"items":[1,2]}')
+        response = generate_json_response(response_model)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Success","data":{"items":[1,2]}}'
+
+    def test_passes_through_background_tasks(self):
+        sentinel = object()
+        response_model = ResponseModel(
+            status_code=status.HTTP_200_OK,
+            message='Success',
+            background_tasks=sentinel,
+        )
+        response = generate_json_response(response_model)
+        assert response.background is sentinel
+
 
 class TestResponseSuccess:
     def test_default_parameters(self):
