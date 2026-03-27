@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v6
-      - name: Set up Python ${{ inputs.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
@@ -34,7 +34,7 @@ jobs:
       - name: Check for vulnerabilities
         uses: pypa/gh-action-pip-audit@v1.1.0
         with:
-          inputs: requirements.txt
+          inputs: requirements.txt requirements-dev.txt
       - name: Run Tests
         run: |
           pytest
