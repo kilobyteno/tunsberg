@@ -14,13 +14,13 @@ jobs:
             name: pypi
             url: https://pypi.org/p/tunsberg
         permissions:
-            id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+            contents: write        # needed for pushing commits/tags
+            id-token: write        # needed for PyPI trusted publishing
         steps:
             -   name: Checkout repository
                 uses: actions/checkout@v6
                 with:
                     fetch-depth: 0
-                    token: ${{ secrets.KILOBYTE_BOT_PAT }}
                     fetch-tags: true
 
             -   name: Update Changelog
