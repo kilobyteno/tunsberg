@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from fastapi import Query
 from fastapi_pagination import Page, Params
@@ -22,15 +22,15 @@ class ResponseModel(BaseModel):
 
     status_code: int
     message: str
-    data: Optional[Union[Dict[str, Any], List[Any], str]] = None
-    pagination: Optional[Pagination] = Field(None, exclude=True)
-    background_tasks: Optional[Any] = Field(None, exclude=True)
+    data: dict[str, Any] | list[Any] | str | None = None
+    pagination: Pagination | None = Field(None, exclude=True)
+    background_tasks: Any | None = Field(None, exclude=True)
 
 
 class ResponsePaginationModel(ResponseModel):
     """Override Response model for pagination to be included"""
 
-    pagination: Optional[Pagination] = None
+    pagination: Pagination | None = None
 
 
 class CustomParams(Params):
@@ -66,7 +66,7 @@ def generate_json_response(response: ResponseModel) -> JSONResponse:
     return JSONResponse(status_code=response.status_code, content=content, background=background)
 
 
-def response_success(message: str = 'Resources was successfully retrieved', data: Optional[Any] = None, background_tasks: Optional[Any] = None) -> JSONResponse:
+def response_success(message: str = 'Resources was successfully retrieved', data: Any | None = None, background_tasks: Any | None = None) -> JSONResponse:
     """
     Use this response when a resource is successfully retrieved.
 
@@ -82,7 +82,7 @@ def response_success(message: str = 'Resources was successfully retrieved', data
     return generate_json_response(ResponseModel(status_code=status.HTTP_200_OK, message=message, data=data, background_tasks=background_tasks))
 
 
-def response_pagination(message: str = 'Resources was successfully retrieved', data: Optional[Any] = None, pagination: Optional[Page] = None) -> JSONResponse:
+def response_pagination(message: str = 'Resources was successfully retrieved', data: Any | None = None, pagination: Page | None = None) -> JSONResponse:
     """
     Use this response when a resource is successfully retrieved.
 
@@ -102,7 +102,7 @@ def response_pagination(message: str = 'Resources was successfully retrieved', d
     return generate_json_response(ResponsePaginationModel(status_code=status.HTTP_200_OK, message=message, data=data, pagination=page_info))
 
 
-def response_created(message: str = 'Resource was successfully created', data: Optional[Any] = None) -> JSONResponse:
+def response_created(message: str = 'Resource was successfully created', data: Any | None = None) -> JSONResponse:
     """
     Use this response when a resource is successfully created.
 
@@ -126,7 +126,7 @@ def response_no_content() -> Response:
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-def response_bad_request(message: str = 'Bad request', data: Optional[Any] = None) -> JSONResponse:
+def response_bad_request(message: str = 'Bad request', data: Any | None = None) -> JSONResponse:
     """
     Use this response when a bad request is made.
 
@@ -248,7 +248,7 @@ def response_not_implemented(message: str = 'Not implemented') -> JSONResponse:
     return generate_json_response(ResponseModel(status_code=status.HTTP_501_NOT_IMPLEMENTED, message=message))
 
 
-def response_custom(message: str = 'An unknown error has occurred', status_code: int = 500, data: Optional[Any] = None) -> JSONResponse:
+def response_custom(message: str = 'An unknown error has occurred', status_code: int = 500, data: Any | None = None) -> JSONResponse:
     """
     Use this response when a response is needed with a custom message and status code.
 
