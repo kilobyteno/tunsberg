@@ -144,7 +144,7 @@ def uvicorn_log_config(
     :return: Configuration dictionary
     :rtype: dict
     """
-    warnings.deprecated('uvicorn_log_config is deprecated, use log_config instead', DeprecationWarning, stacklevel=2)
+    warnings.warn('uvicorn_log_config is deprecated, use log_config instead', DeprecationWarning, stacklevel=2)
 
     # Make sure the log level is valid
     if logging.getLevelName(log_level) is None or logging.getLevelName(log_level).__contains__('Level'):
