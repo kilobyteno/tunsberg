@@ -35,7 +35,7 @@ setuptools.setup(
         'dirty_template': '{tag}',
         'tag_formatter': format_version_tag,
     },
-    setup_requires=['setuptools-git-versioning<2'],
+    setup_requires=['setuptools-git-versioning<4'],
     classifiers=[
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
