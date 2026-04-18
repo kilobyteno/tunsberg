@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.3.0 - 2026-03-27
+
+### What's Changed
+
+* Bump codecov/codecov-action from 5 to 6 by @dependabot[bot] in https://github.com/kilobyteno/tunsberg/pull/19
+* Update setuptools-git-versioning requirement from <2 to <4 by @dependabot[bot] in https://github.com/kilobyteno/tunsberg/pull/20
+* Python version >3.11 is now required
+* Dependencies has been bumped, check `requirements.txt` for versions
+
+**Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.2.2...0.3.0
+
 ## 0.2.1 - 2025-10-20
 
 **Full Changelog**: https://github.com/kilobyteno/tunsberg/compare/0.2.0...0.2.1
