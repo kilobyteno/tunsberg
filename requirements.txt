@@ -1,4 +1,4 @@
 fastapi>=0.135.2
 starlette>=1.0.0
-pydantic>=2.12.5
+pydantic>=2.13.3
 fastapi-pagination>=0.15.11
