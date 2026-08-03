@@ -12,13 +12,21 @@ A collection of opinionated methods, functions, classes and utils for Python, Fa
 pip install tunsberg
 ```
 
+## Development
+
+This project uses [uv](https://docs.astral.sh/uv/). After cloning:
+
+```bash
+uv sync --group dev
+```
+
 ## Usage
 Read the [docs](/docs).
 
 ## Testing
 
 ```bash
-pytest
+uv run pytest
 ```
 
 ## Contributing

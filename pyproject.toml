@@ -1,3 +1,49 @@
+[build-system]
+requires = ["setuptools>=83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tunsberg"
+dynamic = ["version"]
+description = "A collection of opinionated methods, functions, classes and utils for Python, FastAPI and related libraries."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Kilobyte AS" }]
+dependencies = [
+    "fastapi>=0.141.1",
+    "starlette>=1.3.1",
+    "pydantic>=2.13.4",
+    "fastapi-pagination>=0.15.16",
+]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/kilobyteno/tunsberg"
+Github = "https://github.com/kilobyteno/tunsberg"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.1",
+    "ruff>=0.16.1",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-sugar>=1.1.1",
+]
+
+[tool.setuptools.packages.find]
+include = ["tunsberg*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "tunsberg.__version__" }
+
 [tool.ruff]
 line-length = 160
 # Exclude a variety of commonly ignored directories.

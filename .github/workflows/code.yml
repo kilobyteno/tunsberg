@@ -20,26 +20,27 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v7
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7
+      - name: Install uv and set Python ${{ matrix.python-version }}
+        uses: astral-sh/setup-uv@v9
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip' # caching pip dependencies
+          enable-cache: true
       - name: Install All Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
+        run: uv sync --locked --group dev
       - name: Run Ruff
-        run: ruff check --output-format=github
+        run: uv run ruff check --output-format=github
+      - name: Export requirements for audit
+        run: |
+          uv export --frozen --no-dev --no-emit-project -o /tmp/requirements.txt
+          uv export --frozen --group dev --no-emit-project -o /tmp/requirements-dev.txt
       - name: Check for vulnerabilities
         uses: pypa/gh-action-pip-audit@v1.1.0
         with:
-          inputs: requirements.txt requirements-dev.txt
+          inputs: /tmp/requirements.txt /tmp/requirements-dev.txt
           ignore-vulns: |
             CVE-2026-4539
       - name: Run Tests
-        run: |
-          pytest
+        run: uv run pytest
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7
         env:

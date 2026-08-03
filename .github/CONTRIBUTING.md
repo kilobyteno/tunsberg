@@ -13,9 +13,10 @@ We use GitHub to host code, to track issues and feature requests, as well as acc
 Pull requests are the best way to propose changes to the codebase (we use [Github Flow](https://guides.github.com/introduction/flow/index.html)). We actively welcome your pull requests:
 
 1. Fork the repo and create your branch from `main`.
-2. If you've added code that should be tested, test it.
-3. Ensure your commits has descriptive text.
-4. Issue that pull request!
+2. Install dependencies with [uv](https://docs.astral.sh/uv/): `uv sync --group dev`.
+3. If you've added code that should be tested, test it with `uv run pytest`.
+4. Ensure your commits has descriptive text.
+5. Issue that pull request!
 
 ## Any contributions you make will be under the License
 In short, when you submit code changes, your submissions are understood to be under the same [license](../LICENSE.md) that
