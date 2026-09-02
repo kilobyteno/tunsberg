@@ -5,11 +5,11 @@ import re
 
 def format_version_tag(name: str) -> str:
     """
-    Format version tag that is used by setuptools-git-versioning
+    Validate that a version tag is a simple X.Y.Z semver string.
 
-    :param name:
+    :param name: Version tag name
     :type name: str
-    :return: Correctly formatted tag name
+    :return: The validated tag name
     :rtype: str
     :raises ValueError: If tag name is not formatted correctly
     """

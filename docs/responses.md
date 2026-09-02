@@ -34,12 +34,12 @@ from tunsberg.responses import (
 ### Single resource
 
 ```python
-@router.get("/vehicle-types/{key}")
+@router.get('/vehicle-types/{key}')
 def get_vehicle_type(key: str):
-    vehicle_type = {"key": "car", "name": "Car"}
+    vehicle_type = {'key': 'car', 'name': 'Car'}
 
     return response_success(
-        message="Vehicle type retrieved successfully.",
+        message='Vehicle type retrieved successfully.',
         data=vehicle_type,
     )
 ```
@@ -62,15 +62,15 @@ Response:
 ### Multiple resources
 
 ```python
-@router.get("/vehicle-types")
+@router.get('/vehicle-types')
 def list_vehicle_types():
     vehicle_types = [
-        {"key": "car", "name": "Car"},
-        {"key": "motorcycle", "name": "Motorcycle"},
+        {'key': 'car', 'name': 'Car'},
+        {'key': 'motorcycle', 'name': 'Motorcycle'},
     ]
 
     return response_success(
-        message="Vehicle types retrieved successfully.",
+        message='Vehicle types retrieved successfully.',
         data=vehicle_types,
     )
 ```
@@ -95,10 +95,10 @@ Response:
 Use `response_created` when a resource is created.
 
 ```python
-@router.post("/vehicle-types")
+@router.post('/vehicle-types')
 def create_vehicle_type(payload: dict):
     return response_created(
-        message="Vehicle type created successfully.",
+        message='Vehicle type created successfully.',
         data=payload,
     )
 ```
@@ -123,7 +123,7 @@ Response:
 Use `response_no_content` when an operation succeeds but returns no payload.
 
 ```python
-@router.delete("/vehicle-types/{key}")
+@router.delete('/vehicle-types/{key}')
 def delete_vehicle_type(key: str):
     return response_no_content()
 ```
@@ -143,10 +143,11 @@ Use `response_pagination` for paginated collection endpoints.
 ```python
 from tunsberg.responses import response_pagination
 
-@router.get("/parking-areas")
+
+@router.get('/parking-areas')
 def list_parking_areas(page: Page):
     return response_pagination(
-        message="Parking areas successfully fetched",
+        message='Parking areas successfully fetched',
         data=[],
         pagination=page,
     )
@@ -176,8 +177,8 @@ Response:
 
 ```python
 return response_bad_request(
-    message="Invalid vehicle type",
-    data={"field": "key"},
+    message='Invalid vehicle type',
+    data={'field': 'key'},
 )
 ```
 
@@ -198,7 +199,7 @@ Response:
 ### Not found
 
 ```python
-return response_not_found("Vehicle type not found")
+return response_not_found('Vehicle type not found')
 ```
 
 Response:
@@ -220,9 +221,9 @@ Use `response_custom` if none of the predefined helpers fit.
 from tunsberg.responses import response_custom
 
 return response_custom(
-    message="Rate limit exceeded",
+    message='Rate limit exceeded',
     status_code=429,
-    data={"retry_after": 30},
+    data={'retry_after': 30},
 )
 ```
 
@@ -234,8 +235,8 @@ return response_custom(
 
 ```python
 return response_success(
-    message="Email queued",
-    data={"queued": True},
+    message='Email queued',
+    data={'queued': True},
     background_tasks=background_tasks,
 )
 ```

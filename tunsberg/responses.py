@@ -48,16 +48,17 @@ def generate_json_response(response: ResponseModel) -> JSONResponse:
     :return: Tuple of response and status code
     :rtype: Tuple[Dict[str, Any], int]
     """
-    content = dict()
-    content['status_code'] = response.status_code
-    content['message'] = response.message
+    content = {
+        'status_code': response.status_code,
+        'message': response.message,
+    }
     background = None
 
-    if response.data:
-        if isinstance(response.data, dict):
-            content['data'] = response.data
-        else:
+    if response.data is not None:
+        if isinstance(response.data, str):
             content['data'] = json.loads(response.data)
+        else:
+            content['data'] = response.data
     if response.pagination:
         content['pagination'] = response.pagination.model_dump()
     if response.background_tasks:
@@ -66,7 +67,7 @@ def generate_json_response(response: ResponseModel) -> JSONResponse:
     return JSONResponse(status_code=response.status_code, content=content, background=background)
 
 
-def response_success(message: str = 'Resources was successfully retrieved', data: Any | None = None, background_tasks: Any | None = None) -> JSONResponse:
+def response_success(message: str = 'Resources were successfully retrieved', data: Any | None = None, background_tasks: Any | None = None) -> JSONResponse:
     """
     Use this response when a resource is successfully retrieved.
 
@@ -82,7 +83,7 @@ def response_success(message: str = 'Resources was successfully retrieved', data
     return generate_json_response(ResponseModel(status_code=status.HTTP_200_OK, message=message, data=data, background_tasks=background_tasks))
 
 
-def response_pagination(message: str = 'Resources was successfully retrieved', data: Any | None = None, pagination: Page | None = None) -> JSONResponse:
+def response_pagination(message: str = 'Resources were successfully retrieved', data: Any | None = None, pagination: Page | None = None) -> JSONResponse:
     """
     Use this response when a resource is successfully retrieved.
 

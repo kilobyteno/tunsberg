@@ -1,77 +1,82 @@
 name: "Release"
 
 on:
-    release:
-        types: [ created ]
-        branches:
-            - main
+  release:
+    types: [ created ]
 
 jobs:
-    release:
-        name: "Generate release and publish to PyPI"
-        runs-on: ubuntu-latest
-        environment:
-            name: pypi
-            url: https://pypi.org/p/tunsberg
-        permissions:
-            contents: write        # needed for pushing commits/tags
-            id-token: write        # needed for PyPI trusted publishing
-        steps:
-            -   name: Checkout repository
-                uses: actions/checkout@v7
-                with:
-                    fetch-depth: 0
-                    fetch-tags: true
+  release:
+    name: "Generate release and publish to PyPI"
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/tunsberg
+    permissions:
+      contents: write        # needed for pushing changelog commits
+      id-token: write        # needed for PyPI trusted publishing
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ github.event.release.tag_name }}
 
-            -   name: Update Changelog
-                uses: stefanzweifel/changelog-updater-action@v1
-                with:
-                    latest-version: ${{ github.event.release.name }}
-                    release-notes: ${{ github.event.release.body }}
+      - name: Install uv and set Python
+        uses: astral-sh/setup-uv@v9
+        with:
+          python-version-file: ".python-version"
+          enable-cache: true
 
-            -   name: Commit updated CHANGELOG
-                uses: stefanzweifel/git-auto-commit-action@v7
-                with:
-                    branch: main
-                    commit_message: Update CHANGELOG
-                    file_pattern: CHANGELOG.md
+      - name: Install project
+        run: uv sync --locked --no-dev
 
-            -   name: Install uv and set Python
-                uses: astral-sh/setup-uv@v9
-                with:
-                    python-version: "3.12"
-                    enable-cache: true
+      - name: Resolve and validate release version
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          uv run python -c "from tunsberg.utsikten import format_version_tag; format_version_tag('${VERSION}')"
+          CURRENT="$(uv run python -c 'from tunsberg import __version__; print(__version__)')"
+          if [ "${CURRENT}" != "${VERSION}" ]; then
+            echo "tunsberg.__version__ (${CURRENT}) does not match release tag (${VERSION})."
+            echo "Bump __version__ on main and tag that commit before creating the GitHub release."
+            exit 1
+          fi
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
 
-            -   name: Install dependencies
-                run: uv sync --locked --group dev
+      - name: Update Changelog
+        uses: stefanzweifel/changelog-updater-action@v1
+        with:
+          latest-version: ${{ steps.version.outputs.version }}
+          release-notes: ${{ github.event.release.body }}
 
-            -   name: Git Config
-                run: |
-                    git config --global user.email "hei@kilobyte.no"
-                    git config --global user.name "kilobyte-bot"
+      - name: Commit updated CHANGELOG
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          branch: main
+          commit_message: Update CHANGELOG
+          file_pattern: CHANGELOG.md
 
-            -   name: Update __version__ in __init__.py
-                run: |
-                    git pull origin HEAD:main
-                    echo "Version: ${{ github.ref_name }}"
-                    sed -i "s/__version__ = .*/__version__ = '${{ github.ref_name }}'/" ./tunsberg/__init__.py
-                    cat ./tunsberg/__init__.py
-                    git commit -am "Bump version to ${{ github.ref_name }}"
-                    git push origin HEAD:main
+      - name: Build package
+        run: uv build
 
-            -   name: Build package
-                run: uv build
+      - name: Verify package artefacts
+        run: |
+          uvx twine check dist/*
+          uv venv /tmp/tunsberg-release-smoke
+          uv pip install --python /tmp/tunsberg-release-smoke dist/*.whl
+          /tmp/tunsberg-release-smoke/bin/python -c "from tunsberg import __version__; assert __version__ == '${{ steps.version.outputs.version }}', __version__"
 
-            -   name: Publish package distributions to PyPI
-                uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
-            -   name: Post release to Discord
-                uses: SethCohen/github-releases-to-discord@v1.20.0
-                with:
-                    webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-                    color: "16753920"
-                    username: "kilobyte-bot"
-                    avatar_url: "https://avatars.githubusercontent.com/u/98578253?s=200&v=4"
-                    content: "@here A new release has been published! :rocket:"
-                    footer_title: ${{ github.event.release.name }}
-                    footer_timestamp: true
+      - name: Post release to Discord
+        uses: SethCohen/github-releases-to-discord@v1.20.0
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          color: "16753920"
+          username: "kilobyte-bot"
+          avatar_url: "https://avatars.githubusercontent.com/u/98578253?s=200&v=4"
+          content: "@here A new release has been published! :rocket:"
+          footer_title: ${{ steps.version.outputs.version }}
+          footer_timestamp: true

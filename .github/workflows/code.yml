@@ -10,25 +10,37 @@ on:
       - opened
       - edited
 
+permissions:
+  contents: read
+
+concurrency:
+  group: code-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validation:
     name: "Validation"
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: [ "3.11", "3.12", "3.13", "3.14" ]
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v7
       - name: Install uv and set Python ${{ matrix.python-version }}
-        uses: astral-sh/setup-uv@v9
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.0
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
+      - name: Verify lockfile is up to date
+        run: uv lock --check
       - name: Install All Dependencies
         run: uv sync --locked --group dev
       - name: Run Ruff
         run: uv run ruff check --output-format=github
+      - name: Check Ruff formatting
+        run: uv run ruff format --check
       - name: Export requirements for audit
         run: |
           uv export --frozen --no-dev --no-emit-project -o /tmp/requirements.txt
@@ -37,11 +49,22 @@ jobs:
         uses: pypa/gh-action-pip-audit@v1.1.0
         with:
           inputs: /tmp/requirements.txt /tmp/requirements-dev.txt
+          # pip-audit false positive / not applicable to this project's usage; revisit when advisory is updated
           ignore-vulns: |
             CVE-2026-4539
       - name: Run Tests
         run: uv run pytest
       - name: Upload coverage reports to Codecov
+        if: matrix.python-version == '3.12'
         uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Build package
+        if: matrix.python-version == '3.12'
+        run: uv build
+      - name: Smoke install built wheel
+        if: matrix.python-version == '3.12'
+        run: |
+          uv venv /tmp/tunsberg-smoke
+          uv pip install --python /tmp/tunsberg-smoke dist/*.whl
+          /tmp/tunsberg-smoke/bin/python -c "import tunsberg; assert tunsberg.__version__"

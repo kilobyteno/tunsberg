@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import sys
 
 import pytest
@@ -119,8 +118,9 @@ class TestUvicornLogConfig:
 
 
 class TestCheckRequiredEnvVars:
-    # Set the environment variable for testing
-    os.environ['RANDOM_ENV_VAR'] = 'random_value'
+    @pytest.fixture(autouse=True)
+    def _set_random_env_var(self, monkeypatch):
+        monkeypatch.setenv('RANDOM_ENV_VAR', 'random_value')
 
     def test_validate_if_true_in_local_development_env(self):
         req_envs = {'RANDOM_ENV_VAR': {'runtime': True, 'build': True}}

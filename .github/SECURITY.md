@@ -13,3 +13,7 @@ We take the security of our users and their data very seriously. If you believe 
 ## Reporting a Vulnerability
 
 If you have any vulnerability please report at daniel@kilobyte.no
+
+## Dependency audit notes
+
+CI runs `pip-audit` against exported requirements. `CVE-2026-4539` is currently ignored in the Code workflow as not applicable to this project's usage; revisit that ignore when the advisory or affected dependency changes.

@@ -1,7 +1,7 @@
 import json
 import logging
 import warnings
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from os import getenv
 
 
@@ -11,7 +11,7 @@ class JsonFormatter(logging.Formatter):
     def format(self, record):
         """Format log record as JSON"""
         log_record = {
-            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'timestamp': datetime.now(UTC).isoformat(),
             'level': record.levelname,
             'logger': record.name,
             'module': record.module,
@@ -26,7 +26,19 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(log_record)
 
 
-def log_config(  # noqa: PLR0913
+def _validate_log_config_args(log_level: int, log_format: str, log_file_path: str) -> None:
+    """Validate shared logging configuration arguments."""
+    if log_level not in logging.getLevelNamesMapping().values():
+        raise ValueError('Invalid log level')
+
+    if not log_format:
+        raise ValueError('Log format cannot be empty')
+
+    if not log_file_path:
+        raise ValueError('Log file path cannot be empty')
+
+
+def log_config(  # noqa: PLR0913, PLR0917
     log_level: int = logging.DEBUG,
     log_file_path: str = 'fastapi.log',
     log_format: str = '%(asctime)s - [%(levelname)s] %(name)s: %(message)s',
@@ -56,17 +68,7 @@ def log_config(  # noqa: PLR0913
     if log_handlers is None:
         log_handlers = ['time_rotating_file', 'console']
 
-    # Make sure the log level is valid
-    if logging.getLevelName(log_level) is None or logging.getLevelName(log_level).__contains__('Level'):
-        raise ValueError('Invalid log level')
-
-    # Make sure log format is not empty
-    if not log_format:
-        raise ValueError('Log format cannot be empty')
-
-    # Make sure log file path is not empty
-    if not log_file_path:
-        raise ValueError('Log file path cannot be empty')
+    _validate_log_config_args(log_level=log_level, log_format=log_format, log_file_path=log_file_path)
 
     return {
         'version': 1,
@@ -146,17 +148,7 @@ def uvicorn_log_config(
     """
     warnings.warn('uvicorn_log_config is deprecated, use log_config instead', DeprecationWarning, stacklevel=2)
 
-    # Make sure the log level is valid
-    if logging.getLevelName(log_level) is None or logging.getLevelName(log_level).__contains__('Level'):
-        raise ValueError('Invalid log level')
-
-    # Make sure log format is not empty
-    if not log_format:
-        raise ValueError('Log format cannot be empty')
-
-    # Make sure log file path is not empty
-    if not log_file_path:
-        raise ValueError('Log file path cannot be empty')
+    _validate_log_config_args(log_level=log_level, log_format=log_format, log_file_path=log_file_path)
 
     return {
         'version': 1,
@@ -197,7 +189,12 @@ def uvicorn_log_config(
     }
 
 
-def check_required_env_vars(required_env_vars: dict, env: str, live_envs: [] or None = None, code_build: bool = False) -> bool or None:
+def check_required_env_vars(
+    required_env_vars: dict,
+    env: str,
+    live_envs: list[str] | None = None,
+    code_build: bool = False,
+) -> bool:
     """
     Check if all required environment variables are set based on the current environment and if the code is being built.
 
@@ -215,11 +212,11 @@ def check_required_env_vars(required_env_vars: dict, env: str, live_envs: [] or 
     :param env: Current environment
     :type env: str
     :param live_envs: List of live environments
-    :type live_envs: [] or None
+    :type live_envs: list[str] | None
     :param code_build: Whether the code is being built
     :type code_build: bool
     :return: True if all required environment variables are set
-    :rtype: bool or None
+    :rtype: bool
     :raises ValueError: If any required environment variable is not set
     """
     if live_envs is None:

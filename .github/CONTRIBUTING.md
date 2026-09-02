@@ -14,9 +14,14 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 
 1. Fork the repo and create your branch from `main`.
 2. Install dependencies with [uv](https://docs.astral.sh/uv/): `uv sync --group dev`.
-3. If you've added code that should be tested, test it with `uv run pytest`.
-4. Ensure your commits has descriptive text.
-5. Issue that pull request!
+3. Install git hooks: `uv run pre-commit install`.
+4. If you change dependencies in `pyproject.toml`, run `uv lock` and commit `uv.lock`.
+5. If you've added code that should be tested, test it with `uv run pytest`.
+6. Run `uv run ruff check` and `uv run ruff format` before opening a pull request.
+7. Ensure your commits have descriptive text.
+8. Issue that pull request!
+
+Please also follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Any contributions you make will be under the License
 In short, when you submit code changes, your submissions are understood to be under the same [license](../LICENSE.md) that

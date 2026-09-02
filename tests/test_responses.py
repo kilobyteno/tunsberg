@@ -37,12 +37,24 @@ class TestGenerateJsonResponse:
         assert response.status_code == status.HTTP_200_OK
         assert response.body == b'{"status_code":200,"message":"Success"}'
 
-    # Handles empty dictionary data
+    # Includes empty dictionary data in the envelope
     def test_handles_empty_dictionary_data(self):
         response_model = ResponseModel(status_code=status.HTTP_200_OK, message='Success', data={})
         response = generate_json_response(response_model)
         assert response.status_code == status.HTTP_200_OK
-        assert response.body == b'{"status_code":200,"message":"Success"}'
+        assert response.body == b'{"status_code":200,"message":"Success","data":{}}'
+
+    def test_handles_list_data(self):
+        response_model = ResponseModel(status_code=status.HTTP_200_OK, message='Success', data=[{'id': 1}, {'id': 2}])
+        response = generate_json_response(response_model)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Success","data":[{"id":1},{"id":2}]}'
+
+    def test_handles_empty_list_data(self):
+        response_model = ResponseModel(status_code=status.HTTP_200_OK, message='Success', data=[])
+        response = generate_json_response(response_model)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.body == b'{"status_code":200,"message":"Success","data":[]}'
 
     def test_handles_json_string_data(self):
         response_model = ResponseModel(status_code=status.HTTP_200_OK, message='Success', data='{"items":[1,2]}')
@@ -66,7 +78,7 @@ class TestResponseSuccess:
         """Returns a JSONResponse with status code 200 when called with default parameters"""
         response = response_success()
         assert response.status_code == status.HTTP_200_OK
-        assert response.body == b'{"status_code":200,"message":"Resources was successfully retrieved"}'
+        assert response.body == b'{"status_code":200,"message":"Resources were successfully retrieved"}'
 
     def test_custom_message(self):
         """Returns a JSONResponse with a custom message when called with custom message"""
@@ -78,7 +90,7 @@ class TestResponseSuccess:
         """Returns a JSONResponse with custom data when called with custom data"""
         response = response_success(data={'key': 'value'})
         assert response.status_code == status.HTTP_200_OK
-        assert response.body == b'{"status_code":200,"message":"Resources was successfully retrieved","data":{"key":"value"}}'
+        assert response.body == b'{"status_code":200,"message":"Resources were successfully retrieved","data":{"key":"value"}}'
 
 
 class TestResponsePagination:
@@ -86,7 +98,7 @@ class TestResponsePagination:
         """Returns a JSONResponse with status code 200 when called with default parameters"""
         response = response_pagination()
         assert response.status_code == status.HTTP_200_OK
-        assert response.body == b'{"status_code":200,"message":"Resources was successfully retrieved"}'
+        assert response.body == b'{"status_code":200,"message":"Resources were successfully retrieved"}'
 
     def test_custom_message(self):
         """Returns a JSONResponse with a custom message when called with custom message"""
@@ -98,7 +110,7 @@ class TestResponsePagination:
         """Returns a JSONResponse with custom data when called with custom data"""
         response = response_pagination(data={'key': 'value'})
         assert response.status_code == status.HTTP_200_OK
-        assert response.body == b'{"status_code":200,"message":"Resources was successfully retrieved","data":{"key":"value"}}'
+        assert response.body == b'{"status_code":200,"message":"Resources were successfully retrieved","data":{"key":"value"}}'
 
     def test_response_with_pagination_data(self):
         """Generates a JSON response with a 200 status code when pagination data is provided"""
