@@ -46,7 +46,7 @@ jobs:
           uv export --frozen --no-dev --no-emit-project -o /tmp/requirements.txt
           uv export --frozen --group dev --no-emit-project -o /tmp/requirements-dev.txt
       - name: Check for vulnerabilities
-        uses: pypa/gh-action-pip-audit@v1.1.0
+        uses: pypa/gh-action-pip-audit@1220774d901786e6f652ae159f7b6bc8fea6d266 # v1.1.0
         with:
           inputs: /tmp/requirements.txt /tmp/requirements-dev.txt
           # pip-audit false positive / not applicable to this project's usage; revisit when advisory is updated
@@ -56,7 +56,7 @@ jobs:
         run: uv run pytest
       - name: Upload coverage reports to Codecov
         if: matrix.python-version == '3.12'
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: Build package
